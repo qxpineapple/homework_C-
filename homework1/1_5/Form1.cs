@@ -38,13 +38,14 @@ namespace _1_5
             String a = "", b = "";
             a = this.maskedTextBox1.Text;
             b = this.maskedTextBox2.Text;
-            if ((a != null) && (b != null))
+            bool d, f;
+            if ((d = Int32.TryParse(a,out x)) && (f = Int32.TryParse(b, out y)))
             {
-                x = Int32.Parse(a);
-                y = Int32.Parse(b);
                 z = x * y;
                 this.label1.Text = "" + z;
             }
+            else
+                this.label1.Text = "" + "请输入合适的整数";
         }
 
     }
