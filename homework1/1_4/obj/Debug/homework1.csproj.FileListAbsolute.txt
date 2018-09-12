@@ -1,0 +1,7 @@
+D:\可能性测试\C#\homework1\homework1\bin\Debug\homework1.exe.config
+D:\可能性测试\C#\homework1\homework1\bin\Debug\homework1.exe
+D:\可能性测试\C#\homework1\homework1\bin\Debug\homework1.pdb
+D:\可能性测试\C#\homework1\homework1\obj\Debug\homework1.csprojResolveAssemblyReference.cache
+D:\可能性测试\C#\homework1\homework1\obj\Debug\homework1.csproj.CoreCompileInputs.cache
+D:\可能性测试\C#\homework1\homework1\obj\Debug\homework1.exe
+D:\可能性测试\C#\homework1\homework1\obj\Debug\homework1.pdb
