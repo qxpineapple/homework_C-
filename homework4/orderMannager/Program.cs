@@ -4,220 +4,275 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp1
+namespace orderMannager
 {
-	class MyException : ApplicationException
-	{
-		public MyException(string message):base(message)
-		{
+    class Program
+    {
+        class MyException : ApplicationException
+        {
+            public MyException(string message) : base(message)
+            {
 
-		}
-	}
+            }
+        }
+        public class OrderDetails
+        {
+            private int _id;
+            private string _customerName;
+            private string _itemName;
+            private int _count;
 
-	class OrderService
-	{
-		public List<Order> list = new List<Order>();
+            public int Id
+            {
+                get
+                {
+                    return _id;
+                }
+                set
+                {
+                    _id = value;
+                }
+            }
+            public int Count
+            {
+                get
+                {
+                    return _count;
+                }
+                set
+                {
+                    _count = value;
+                }
+            }
+            public string CustomerName
+            {
+                get
+                {
+                    return _customerName;
+                }
+                set
+                {
+                    _customerName = value;
+                }
+            }
+            public string ItemName
+            {
+                get
+                {
+                    return _itemName;
+                }
+                set
+                {
+                   _itemName = value;
+                }
+            }
 
-		public OrderService()
-		{
-			Order order01 = new Order("01","小张","香蕉");
-			list.Add(order01);
-			
-		}
-		//添加订单
-		public void InsertOrder()
-		{
-			Console.Write("输入商品名：");
-			string friuts = Convert.ToString(Console.ReadLine());
-			Console.Write("输入客户名：");
-			string costumer = Convert.ToString(Console.ReadLine());
+            public OrderDetails(string customerName = null, string itemName = null, int count = 0)
+            {
+                this.Count = count;
+                this.CustomerName = customerName;
+                this.ItemName = itemName;
+            }
+            public override string ToString()
+            {
+                return 
+                    "订单： " + Id + "\n" +
+                    "客户：" + CustomerName + "\n" +
+                    "商品：" + ItemName + "\n" +
+                    "数量： " + Count + "\n";
+            }
+        }
+        public class OrderService
+        {
+            public List<OrderDetails> orderList = new List<OrderDetails>();
+            public int this[int id]
+            {
+                get
+                {
+                    int index = 0;
+                    while (index < orderList.Count)
+                    {
+                        if (orderList[index].Id == id)
+                        {
+                            return orderList[index].Id;
+                        }
+                        index++;
+                    }
+                    return -1;
+                }
+            }
+            public int this[string name]
+            {
+                get
+                {
+                    int index = 0;
+                    while (index < orderList.Count)
+                    {
+                        if (orderList[index].CustomerName == name || orderList[index].ItemName == name)
+                        {
+                            return orderList[index].Id;
+                        }
+                        index++;
+                    }
+                    return -1;
+                }
+            }
+            public bool OrderDelete(int id)
+            {
+                int ID = this[id];
+                if (ID != -1)
+                {
+                    orderList.RemoveAt(ID);
+                    return true;
+                }
+                else
+                {
+                    throw new MyException("删除失败,未找到删除数据");
+                }
+               
+            }
+            public bool OrderDelete(string name)
+            {
+                int ID = this[name];
+                if (ID != -1)
+                {
+                    orderList.RemoveAt(ID);
+                    return true;
+                }
+                else
+                {
+                    throw new MyException("删除失败,未找到删除数据");
+                }
 
-			Console.Write("输入数量:");
-			int Amount = Convert.ToInt32(Console.ReadLine());
+            }
+            public void InsertOrder(OrderDetails newOrder)
+            {
+                orderList.Add(newOrder);
+                newOrder.Id = orderList.Count;
+            }
+        }
+        public class Order
+        {
+            static OrderService orderService = new OrderService();
+            private OrderDetails order;
+            public Order(string costumerName, string itemName, int count)
+            {
+                order = new OrderDetails(costumerName, itemName, count);
+                orderService.InsertOrder(order);
+            }
+            public Order() { }
 
-			//Console.WriteLine(sum);
+            public void Seek(int id)
+            {
+                int ID = orderService[id] - 1;
+                if(ID >= 0)
+                {
+                    Console.WriteLine("所找订单信息：");
+                    Console.WriteLine(orderService.orderList[ID].ToString());
+                }
+                else
+                {
+                    Console.WriteLine("无此订单!");
+                }
+            }
+            public void Seek(string name)
+            {
+                int ID = orderService[name] - 1;
+                if (ID >= 0)
+                {
+                    Console.WriteLine("所找订单信息：");
+                    Console.WriteLine(orderService.orderList[ID].ToString());
+                }
+                else
+                {
+                    Console.WriteLine("无此订单!");
+                }
+            }
 
+            //修改用户和商品名称
+            public void Change(int flag,int ID,string name)
+            {
+                if (ID >= 1 && ID <= orderService.orderList.Count)
+                {
+                    ID--;
+                    switch (flag)
+                    {
+                        case 2:
+                            orderService.orderList[ID].CustomerName = name;
+                            Console.WriteLine("请核对修改后订单信息:");
+                            Console.WriteLine(orderService.orderList[ID].ToString());
+                            break;
+                        case 3:
+                            orderService.orderList[ID].CustomerName = name;
+                            Console.WriteLine("请核对修改后订单信息:");
+                            Console.WriteLine(orderService.orderList[ID].ToString());
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("超出可修改范围");
+                }
 
-			Order orderx = new Order("0" + (list.Count + 1), costumer, friuts);
+            }
+            //修改数量
+            public void Change(int flag,int ID, int count)
+            {
+                if (ID >= 1 && ID <= orderService.orderList.Count)
+                {
+                    ID--;
+                    orderService.orderList[ID].Count = ID;
+                    Console.WriteLine("请核对修改后订单信息:");
+                    Console.WriteLine(orderService.orderList[ID].ToString());
+                }
 
-			list.Add(orderx);
-		}
+                else
+                {
+                    throw new MyException("超出可修改范围");
+                }
 
-		//查找订单
-		public void FindOrder()
-		{
-			Console.Write("请输入查询方式（按订单号输入1、客户名2、商品名3）：");
-			int x = 0;
-			x = Convert.ToInt32(Console.ReadLine());
-			Console.Write("请输入查询关键字：");
-			string names = Convert.ToString(Console.ReadLine());
-			switch (x)
-			{
-				case 1:
-					foreach(Order s in list)
-					{
-						if (s.card.Contains(names))
-							Console.WriteLine(s.card + " " + s.name + " " + s.series + " " );
-					}
-					break;
-				case 2:
-					foreach (Order s in list)
-					{
-						if (s.name .Contains(names))
-							Console.WriteLine(s.card + " " + s.name + " " + s.series + " " );
-					}
-					break;
-				case 3:
-					foreach (Order s in list)
-					{
-						if (s.series.Contains(names))
-							Console.WriteLine(s.card + " " + s.name + " " + s.series + " " );
-					}
-					break;
-			}
-		}
-		
-		//删除订单
-		public void DelOrder()
-		{
-			Console.Write("请输入订单号：");
-			string num = Convert.ToString(Console.ReadLine());
-			bool num1 = false;
-			for(int i = 0; i < list.Count; i++)
-			{
-				if (list[i].card == num)
-					num1 = true;
-			}
+               
+            }
 
-			if (num1 == false)
-				throw new MyException("订单号不存在或者输入错误，请重新输入：");
+            public void Delete(int ID)
+            {
+                ID--;
+                orderService.OrderDelete(ID);
+            }
 
+            public string Details()
+            {
+                return this.order.ToString();
+            }
 
-			for (int i = 0;i<list.Count;i++)
-			{
-				if (list[i].card.Contains(num))
-				{
-					list.Remove(list[i]);
-					
-					Console.WriteLine("删除成功！！");
-
-				}
-			}
-			
-		}
-		
-		//修改订单
-		public void ChangeOrder()
-		{
-			string num = "0";
-			int x = 0;
-			bool b = false;
-			Console.Write("请输入订单号：");
-			num = Convert.ToString(Console.ReadLine());
-			Console.Write("请输入要修改的地方（修改订单号输入1、客户名2、商品名3）：");
-			x = Convert.ToInt32(Console.ReadLine());
-			
-			if(x > 3 || x < 1)
-			{
-				throw new MyException("输入不合理！输入的值必须是1、2、3，需要重新输入：");
-			}
-
-			Console.Write("请输入更改后的值：");
-			string change = Convert.ToString(Console.ReadLine());
-			switch (x)
-			{
-				case 1:
-					for (int i = 0; i < list.Count; i++)
-					{
-						if (list[i].card.Contains(num))
-						{
-							list[i].card = change;
-							Console.WriteLine("修改成功！");
-						}
-					}
-					break;
-				case 2:
-					for (int i = 0; i < list.Count; i++)
-					{
-						if (list[i].card.Contains(num))
-						{
-							list[i].name = change;
-							Console.WriteLine("修改成功！");
-						}
-					}
-					break;
-				case 3:
-					for (int i = 0; i < list.Count; i++)
-					{
-						if (list[i].card.Contains(num))
-						{
-							list[i].series = change;
-							Console.WriteLine("修改成功！");
-						}
-					}
-					break;
-
-				default:
-					Console.WriteLine("修改失败！");
-					break;
-			}
+            
+        }
 
 
-		}
-	
+        static void Main(string[] args)
+        {
+            Order order = new Order();
+            //Console.WriteLine("输入您想使用的功能代号（1.新增订单；2.查找订单；3.删除订单；4.修改订单）: ");
+            //int flag = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("输入商品名：");
+            string itemName = Convert.ToString(Console.ReadLine());
+            Console.WriteLine("输入客户名：");
+            string costumerName = Convert.ToString(Console.ReadLine());
+            Console.WriteLine("输入数量:");
+            int count = Convert.ToInt32(Console.ReadLine());
+            Order myOrder01 = new Order(itemName, costumerName, count);
+            Order myOrder02 = new Order(itemName, costumerName, count);
+            Order myOrder03 = new Order(itemName, costumerName, count);
+            Console.WriteLine(myOrder01.Details());
+            Console.WriteLine(myOrder02.Details());
+            Console.WriteLine(myOrder03.Details());
+            order.Seek(1);
+            order.Change( 2,1, "rua");
+            //order.Delete(1);
+            Console.WriteLine(myOrder01.Details());
+        }
+    }
+   
 
-	}
-
-	class Order
-	{
-		public string card;
-		public string name;
-		public string series;
-		
-		public Order(string c, string n,string s)
-		{
-			this.card = c;
-			this.name = n;
-			this.series = s;
-		}
-
-
-		static void Main(string[] args)
-		{
-
-
-			
-			
-			
-			OrderService orderService = new OrderService();
-
-			//添加订单
-			orderService.InsertOrder();
-
-			//查找订单
-
-			//orderService.FindOrder();
-
-			//移除订单
-			try
-			{
-				orderService.DelOrder();
-			}
-			catch (MyException e)
-			{
-				Console.WriteLine("MyException:{0}", e.Message);
-				orderService.DelOrder();
-			}
-			
-			//遍历订单
-			Console.WriteLine("订单号 客户 品类 总价" + "\n");
-			foreach(Order x in orderService.list)
-			{
-				Console.WriteLine(x.card + " "+ x.name + " " + x.series + " ");
-			}
-
-		}
-	}
-
+    
 }
-
