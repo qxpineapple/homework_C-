@@ -117,33 +117,9 @@ namespace orderMannager
                     return -1;
                 }
             }
-            public bool OrderDelete(int id)
+            public void OrderDelete(int ID)
             {
-                int ID = this[id];
-                if (ID != -1)
-                {
-                    orderList.RemoveAt(ID);
-                    return true;
-                }
-                else
-                {
-                    throw new MyException("删除失败,未找到删除数据");
-                }
-               
-            }
-            public bool OrderDelete(string name)
-            {
-                int ID = this[name];
-                if (ID != -1)
-                {
-                    orderList.RemoveAt(ID);
-                    return true;
-                }
-                else
-                {
-                    throw new MyException("删除失败,未找到删除数据");
-                }
-
+                orderList.RemoveAt(ID);
             }
             public void InsertOrder(OrderDetails newOrder)
             {
@@ -162,6 +138,7 @@ namespace orderMannager
             }
             public Order() { }
 
+            //按订单号查找
             public void Seek(int id)
             {
                 int ID = orderService[id] - 1;
@@ -175,6 +152,7 @@ namespace orderMannager
                     Console.WriteLine("无此订单!");
                 }
             }
+            //用户和商品名称查找
             public void Seek(string name)
             {
                 int ID = orderService[name] - 1;
@@ -236,13 +214,37 @@ namespace orderMannager
 
             public void Delete(int ID)
             {
-                ID--;
-                orderService.OrderDelete(ID);
+                if (ID >= 1 && ID <= orderService.orderList.Count)
+                {
+                    ID--;
+                    orderService.OrderDelete(ID);
+
+                }
+                else
+                {
+                    Console.WriteLine("超出可删除范围");
+                }
+
+
             }
 
             public string Details()
             {
                 return this.order.ToString();
+            }
+            public string Details(int ID)
+            {
+                if (ID >= 1 && ID <= orderService.orderList.Count)
+                {
+                    ID--;
+                    return orderService.orderList[ID].ToString();
+                }
+                else
+                {
+                    throw new MyException("超出范围");
+                }
+
+              
             }
 
             
@@ -263,13 +265,13 @@ namespace orderMannager
             Order myOrder01 = new Order(itemName, costumerName, count);
             Order myOrder02 = new Order(itemName, costumerName, count);
             Order myOrder03 = new Order(itemName, costumerName, count);
-            Console.WriteLine(myOrder01.Details());
-            Console.WriteLine(myOrder02.Details());
-            Console.WriteLine(myOrder03.Details());
+            Console.WriteLine(myOrder01.Details(1));
+            Console.WriteLine(myOrder02.Details(2));
+            Console.WriteLine(myOrder03.Details(3));
             order.Seek(1);
-            order.Change( 2,1, "rua");
-            //order.Delete(1);
-            Console.WriteLine(myOrder01.Details());
+            order.Change( 2,2, "rua");
+            order.Delete(1);
+            Console.WriteLine(myOrder01.Details(1));
         }
     }
    
